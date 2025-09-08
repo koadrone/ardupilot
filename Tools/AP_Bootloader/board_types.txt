@@ -130,7 +130,7 @@ AP_HW_CUAV_NORA                      1009
 AP_HW_CUAV_X7_PRO                    1010
 AP_HW_SUCCEXF4                       1011
 AP_HW_LIGHTSPARKMINI                 1012
-AP_HW_MATEKH743                      1013
+AP_HW_KoaFC	                     1013
 AP_HW_MATEKF405_GPS                  1014
 AP_HW_MRO_NEXUS                      1015
 AP_HW_HITEC_MOSAIC                   1016
@@ -530,6 +530,6 @@ AP_HW_CUAV-X25-EVO_ODID             17002
 
 AP_HW_CUBEORANGEPLUS_ODID           11063
 
-AP_HW_KoaFC			    7777
+
 # do not allocate board IDs above 10,000 for non-ODID boards.
 # do not allocate board IDs above 19,999 in this file.
