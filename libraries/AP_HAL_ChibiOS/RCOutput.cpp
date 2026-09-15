@@ -2040,7 +2040,9 @@ void RCOutput::fill_DMA_buffer_byte(dmar_uint_t *buffer, uint8_t stride, uint8_t
     }
 }
 
-#define BYTE_TIME(bitus) (bitus *  (BYTE_BITS + 2))   // timeout should come well after the next start bit
+// timeout should come well after the next start bit, on BlueJay start to start is about 624us
+// timeout behaviour can be stressed by setting this to BYTE_BITS + 2
+#define BYTE_TIME(bitus) (bitus *  (BYTE_BITS + 3U))
 
 /*
   send one serial byte, blocking call, should be called with the DMA lock held
@@ -2194,6 +2196,7 @@ void RCOutput::serial_bit_irq(void)
         if ((byteval & 0x201) != 0x200) {
             // wrong start/stop bits
             byteval = BAD_BYTE;
+            chVTResetI(&irq.serial_timeout);
         } else {
             // seen the last bit so setup the timeout for the next byte
             chVTSetI(&irq.serial_timeout, chTimeUS2I(BYTE_TIME(irq.bit_time_tick)), serial_byte_timeout, irq.waiter);
@@ -2212,6 +2215,12 @@ void RCOutput::serial_bit_irq(void)
 void RCOutput::serial_byte_timeout(virtual_timer_t* vt, void *ctx)
 {
     chSysLockFromISR();
+
+    // avoid a ChibiOS race in timer signalling, if all is well it should not be armed at this point
+    if (chVTIsArmedI(vt)) {
+        chSysUnlockFromISR();
+        return;
+    }
     uint16_t byteval = irq.bitmask | (((1U<<BYTE_BITS)-1) & ~((1U<<irq.nbits)-1));
     // we can accept a byte with a timeout if the last bit was 1
     // and the start bit is set correctly
@@ -2221,6 +2230,11 @@ void RCOutput::serial_byte_timeout(virtual_timer_t* vt, void *ctx)
         // wrong start/stop bits
         byteval = BAD_BYTE;
     }
+
+    // we are assuming we read the byte so reset in case there is another read
+    irq.nbits = 0;
+    irq.bitmask = 0;
+    irq.last_bit = 0;
 
     serial_buffer.write((uint8_t*)&byteval, 2);
     chSysUnlockFromISR();
