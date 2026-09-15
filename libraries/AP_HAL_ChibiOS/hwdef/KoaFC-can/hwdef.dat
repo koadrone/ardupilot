@@ -1,0 +1,18 @@
+# hw definition file for processing by chibios_hwdef.py
+# for the KoaFC hardware, CAN variant
+#
+# Same physical board as KoaFC. TELEM2 (UART4 on PB8/PB9) is repurposed
+# as CAN1 for users who need a CAN port. Everything else is inherited.
+
+include ../KoaFC/hwdef.dat
+
+# undefine the pins we are going to change
+undef PB9 PB8
+undef UART4
+
+# TELEM2 -> CAN1
+PB9 CAN1_TX CAN1
+PB8 CAN1_RX CAN1
+
+# order of UARTs (and USB), UART4 removed
+SERIAL_ORDER  OTG1 USART2 USART1 USART3 UART7 UART5 UART8
