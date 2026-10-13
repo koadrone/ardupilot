@@ -26,6 +26,13 @@ SERIAL4_PROTOCOL 16
 SERIAL5_PROTOCOL 23
 SERIAL6_PROTOCOL 0
 
+#CAN bus on (TELEM2 pins are CAN1 on this variant)
+# CAN_P1_DRIVER defaults to 0 (disabled) on every board, which makes no sense
+# for a firmware whose only difference is that it has a CAN port. Protocol and
+# bitrate defaults (DroneCAN, 1 Mbit) are already what a DroneCAN peripheral
+# expects, so enabling the interface is all that is needed.
+CAN_P1_DRIVER 1
+
 #MSP DisplayPort enable
 OSD_TYPE 5
 
