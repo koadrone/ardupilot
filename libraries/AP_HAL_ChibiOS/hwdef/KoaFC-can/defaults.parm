@@ -5,7 +5,24 @@ BATT_CRT_VOLT 10.2
 BATT_LOW_VOLT 10.5
 
 #Serial Port defaults
-SERIAL4_PROTOCOL 42
+# CAN variant: UART4 (TELEM2) became CAN1, so it is gone from SERIAL_ORDER
+# and every port after it shifts down one. The connectors are unchanged, so
+# the protocol has to follow the connector, not the old SERIALn number:
+#
+#   SERIALn  UART     connector        was (KoaFC)
+#   2        USART1   GPS              SERIAL3
+#   3        USART3   VTX-HD           SERIAL4
+#   4        UART7    ESC telemetry    SERIAL5
+#   5        UART5    RCIN (SBUS)      SERIAL6
+#   6        UART8    -                SERIAL7
+#
+# SERIAL2 needs an explicit GPS protocol and baud: its firmware defaults are
+# MAVLink2 / 57600, whereas SERIAL3 (the GPS port on the non-CAN board)
+# defaults to GPS / 230400.
+SERIAL2_PROTOCOL 5
+SERIAL2_BAUD 230
+SERIAL3_PROTOCOL 42
+SERIAL4_PROTOCOL 16
 SERIAL5_PROTOCOL 23
 SERIAL6_PROTOCOL 0
 
